@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": ".", // This should be set to the root of your source files
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["components/*"] // Adjust according to your project structure
     }
   }
 }
