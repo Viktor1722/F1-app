@@ -1,46 +1,26 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Navbar from "./navbar";
 import Image from "next/image";
 import MiamiGP from "../public/MiamiGP.avif";
 import Mercedes from "../public/mercedes.svg";
-
-async function fetchLastRaceDetails(year) {
-  try {
-    const raceUrl = `https://ergast.com/api/f1/${year}/last/results.json`;
-    const response = await fetch(raceUrl);
-
-    if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const race = data.MRData.RaceTable.Races[0];
-
-    const results = race.Results.map((result) => ({
-      driver: {
-        driverId: result.Driver.driverId,
-        givenName: result.Driver.givenName,
-        familyName: result.Driver.familyName,
-      },
-      constructor: result.Constructor.name,
-      position: result.position,
-    }));
-
-    return {
-      raceName: race.raceName,
-      date: race.date,
-      results,
-    };
-  } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
-  }
-}
+import CanadaGP from "../public/CanadaGP.png";
+import CanadaFlag from "../public/CanadaFlag.png";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
+import { Button } from "./components/ui/button";
+import { fetchNextRaceDetails } from "../app/api/fetchNextRaceDetails";
+import { fetchLastRaceDetails } from "../app/api/fetchLastRaceDetails";
 
 export default function Home() {
   const [lastRace, setLastRace] = useState(null);
+  const [nextRace, setNextRace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -48,8 +28,12 @@ export default function Home() {
     async function fetchData() {
       try {
         const year = new Date().getFullYear();
-        const raceDetails = await fetchLastRaceDetails(year);
+        const [raceDetails, nextRaceDetails] = await Promise.all([
+          fetchLastRaceDetails(year),
+          fetchNextRaceDetails(year),
+        ]);
         setLastRace(raceDetails);
+        setNextRace(nextRaceDetails);
       } catch (error) {
         console.error("Fetch error:", error);
         setError(error.message);
@@ -81,8 +65,104 @@ export default function Home() {
       <div className="w-full">
         <Navbar />
       </div>
+      <section className="flex flex-wrap gap-3">
+        <div>
+          <Card>
+            <CardHeader className="text-3xl">
+              <CardTitle>{lastRace.raceName} 2024</CardTitle>
+              <CardDescription className="text-lg w-[500px]">
+                Home glory for Leclerc as he controls Monaco Grand Prix to win
+                for Ferrari from Piastri and Sainz
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className=" w-[600px] overflow-x-auto scroll-smooth scrollbar-hide rounded-lg">
+                <div className="flex flex-col justify-center items-start space-x-2">
+                  {lastRace.results.slice(0, 3).map((result, index) => {
+                    const driverClass =
+                      index === 0
+                        ? "first-driver"
+                        : index === 1
+                        ? "second-driver"
+                        : "third-driver";
+
+                    const nameClass =
+                      index === 0
+                        ? "driver-name-1"
+                        : index === 1
+                        ? "driver-name-2"
+                        : "driver-name-3";
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex-none bg-slate-200 w-[300px] rounded-xl flex flex-wrap justify-center mx-2 my-3 mt-4 p-4 ${driverClass}`}
+                      >
+                        <div className="flex flex-row items-center space-x-3">
+                          <span className="text-lg font-bold">{index + 1}</span>
+                          <div>
+                            <p className={`text-xs font-semibold ${nameClass}`}>
+                              {result.driver.givenName}{" "}
+                              {result.driver.familyName}
+                            </p>
+                          </div>
+                        </div>
+                        <p className={`text-xs font-semibold ${nameClass}`}>
+                          {result.time}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                variant="outline"
+                className="bg-red-500 text-white px-12 py-5"
+              >
+                Button
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+
+        <div>
+          <Card className="mt-6 bg-black border-none">
+            <CardHeader className="text-3xl">
+              <div className="flex gap-4">
+                <CardTitle className="text-white">Next Race </CardTitle>
+                <Image
+                  src={CanadaFlag}
+                  alt="Track"
+                  className="w-12 object-cover rounded-sm mr-11"
+                />
+              </div>
+              <CardDescription className="text-lg w-[500px] text-slate-50">
+                {nextRace
+                  ? `${nextRace.raceName} - ${nextRace.locality}, ${nextRace.country}`
+                  : "No upcoming race data available"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Image src={CanadaGP} alt="Flag" className="w-96 mt-4" />
+              {nextRace && (
+                <>
+                  <p className="text-lg text-white bg-zinc-700 rounded-xl px-4">
+                    Date: {nextRace.date}
+                  </p>
+                  <p className="text-lg text-white">Time: {nextRace.time}</p>
+                  <p className="text-lg text-white">
+                    Track: {nextRace.trackName}
+                  </p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </section>
       <section>
-        <div className="flex flex-col gap-4">
+        {/* <div className="flex flex-col gap-4">
           {newsArticles.map((article) => (
             <div
               key={article.id}
@@ -104,32 +184,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-      <section id="drivers" className="flex w-full flex-col items-center">
-        <span className="w-full p-1 bg-stone-900 text-white">
-          Last Grand Prix Finishers
-        </span>
-        <div className="w-full flex overflow-x-auto bg-white scroll-smooth scrollbar-hide">
-          <div className="flex justify-start items-center space-x-2">
-            {lastRace.results.map((result, index) => (
-              <div
-                key={index}
-                className="flex-none flex flex-wrap justify-center w-60 mx-2 my-3 rounded-lg p-4"
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg font-bold">{index + 1}</span>
-                  <div>
-                    <p className="text-xs font-semibold">
-                      {result.driver.givenName} {result.driver.familyName}
-                    </p>
-                    <p className="text-sm">{result.constructor}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </div> */}
       </section>
     </main>
   );
