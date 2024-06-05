@@ -1,13 +1,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../public/f1_logo 1.svg";
+import Logo from "../../public/f1_logo 1.svg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-red-600 text-white p-4">
+    <nav className="bg-f1Red text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-lg font-semibold">
           <Link

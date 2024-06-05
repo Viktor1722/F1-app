@@ -1,10 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Navbar from "./navbar";
+import Navbar from "./components/navbar";
 import Image from "next/image";
-import MiamiGP from "../public/MiamiGP.avif";
-import Mercedes from "../public/mercedes.svg";
-import CanadaGP from "../public/CanadaGP.png";
 import CanadaFlag from "../public/CanadaFlag.png";
 import {
   Card,
@@ -67,47 +64,37 @@ export default function Home() {
       </div>
       <section className="flex flex-wrap gap-3">
         <div>
-          <Card>
-            <CardHeader className="text-3xl">
+          <Card className="bg-black border-none">
+            <CardHeader className="text-2xl text-white">
               <CardTitle>{lastRace.raceName} 2024</CardTitle>
-              <CardDescription className="text-lg w-[500px]">
+              <CardDescription className="text-sm text-slate-50">
                 Home glory for Leclerc as he controls Monaco Grand Prix to win
                 for Ferrari from Piastri and Sainz
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className=" w-[600px] overflow-x-auto scroll-smooth scrollbar-hide rounded-lg">
-                <div className="flex flex-col justify-center items-start space-x-2">
+              <div className="w-full overflow-x-auto scroll-smooth scrollbar-hide rounded-lg">
+                <div className="flex flex-col justify-center items-start space-y-1 gap-2">
                   {lastRace.results.slice(0, 3).map((result, index) => {
-                    const driverClass =
-                      index === 0
-                        ? "first-driver"
-                        : index === 1
-                        ? "second-driver"
-                        : "third-driver";
-
-                    const nameClass =
-                      index === 0
-                        ? "driver-name-1"
-                        : index === 1
-                        ? "driver-name-2"
-                        : "driver-name-3";
+                    const driverClass = `driver-${index + 1}`;
 
                     return (
                       <div
                         key={index}
-                        className={`flex-none bg-slate-200 w-[300px] rounded-xl flex flex-wrap justify-center mx-2 my-3 mt-4 p-4 ${driverClass}`}
+                        className={`flex-none bg-white w-full rounded-lg flex justify-between items-center p-4 ${driverClass}`}
                       >
-                        <div className="flex flex-row items-center space-x-3">
+                        <div className="flex flex-row items-center space-x-2 gap-3">
                           <span className="text-lg font-bold">{index + 1}</span>
                           <div>
-                            <p className={`text-xs font-semibold ${nameClass}`}>
+                            <p className="text-sm font-semibold">
                               {result.driver.givenName}{" "}
-                              {result.driver.familyName}
+                              <span className="font-bold">
+                                {result.driver.familyName}
+                              </span>
                             </p>
                           </div>
                         </div>
-                        <p className={`text-xs font-semibold ${nameClass}`}>
+                        <p className="text-sm font-semibold text-green-400">
                           {result.time}
                         </p>
                       </div>
@@ -116,48 +103,97 @@ export default function Home() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-start space-x-2 mt-2">
               <Button
                 variant="outline"
-                className="bg-red-500 text-white px-12 py-5"
+                className="bg-f1Red text-white px-6 py-2 border-none"
               >
-                Button
+                RESULTS
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-black text-white border border-white px-6 py-2"
+              >
+                HIGHLIGHTS
               </Button>
             </CardFooter>
           </Card>
         </div>
 
         <div>
-          <Card className="mt-6 bg-black border-none">
-            <CardHeader className="text-3xl">
-              <div className="flex gap-4">
-                <CardTitle className="text-white">Next Race </CardTitle>
+          <Card className="mt-4 bg-black border-none">
+            <CardHeader className="text-2xl">
+              <div className="flex gap-2">
+                <CardTitle className="text-f1Red text-sm">
+                  Round 7 Next Race
+                </CardTitle>
+              </div>
+              <div className="flex gap-4 items-center mt-1">
+                <p className="text-white">
+                  {nextRace
+                    ? `${nextRace.raceName}`
+                    : "No upcoming race data available"}
+                </p>
+
                 <Image
                   src={CanadaFlag}
                   alt="Track"
-                  className="w-12 object-cover rounded-sm mr-11"
+                  className="w-12 object-cover rounded-sm"
                 />
               </div>
-              <CardDescription className="text-lg w-[500px] text-slate-50">
-                {nextRace
-                  ? `${nextRace.raceName} - ${nextRace.locality}, ${nextRace.country}`
-                  : "No upcoming race data available"}
-              </CardDescription>
+              <p className="text-white">{nextRace.locality}</p>
+              <p className="text-white text-lg mt-1">17-19 May</p>
+              <CardDescription className="text-lg w-[500px] text-slate-50"></CardDescription>
             </CardHeader>
             <CardContent>
-              <Image src={CanadaGP} alt="Flag" className="w-96 mt-4" />
               {nextRace && (
-                <>
-                  <p className="text-lg text-white bg-zinc-700 rounded-xl px-4">
-                    Date: {nextRace.date}
-                  </p>
-                  <p className="text-lg text-white">Time: {nextRace.time}</p>
-                  <p className="text-lg text-white">
-                    Track: {nextRace.trackName}
-                  </p>
-                </>
+                <div className="bg-slate-900 px-4 py-4 rounded-xl">
+                  <div className="flex gap-4 items-center justify-between">
+                    <p className="text-sm text-white">PRACTICE 1</p>
+                    <p className="text-gray-400 text-sm">FRI</p>
+                    <p className="text-white bg-zinc-800 px-2 py-1 rounded-2xl text-sm">
+                      13:30 - 14:30
+                    </p>
+                  </div>
+                  <div className="flex gap-4 items-center justify-between mt-2">
+                    <p className="text-sm text-white">PRACTICE 2</p>
+                    <p className="text-gray-400 text-sm">FRI</p>
+                    <p className="text-white bg-zinc-800 px-2 py-1 rounded-2xl text-sm">
+                      17:00 - 18:00
+                    </p>
+                  </div>
+                  <div className="flex gap-4 items-center justify-between mt-2">
+                    <p className="text-sm text-white">PRACTICE 3</p>
+                    <p className="text-gray-400 text-sm">SAT</p>
+                    <p className="text-white bg-zinc-800 px-2 py-1 rounded-2xl text-sm">
+                      12:30 - 13:30
+                    </p>
+                  </div>
+                  <div className="flex gap-4 items-center justify-between mt-2">
+                    <p className="text-sm text-white">QUALIFYING</p>
+                    <p className="text-gray-400 text-sm">SAT</p>
+                    <p className="text-white bg-zinc-800 px-2 py-1 rounded-2xl text-sm">
+                      16:00 - 17:00
+                    </p>
+                  </div>
+                  <div className="flex gap-4 items-center justify-between mt-2">
+                    <p className="text-sm text-white">RACE</p>
+                    <p className="text-gray-400 text-sm">SUN</p>
+                    <p className="text-white bg-zinc-800 px-2 py-1 rounded-2xl text-sm">
+                      15:00
+                    </p>
+                  </div>
+                </div>
               )}
             </CardContent>
+            <CardFooter className="flex justify-start space-x-2 mt-2">
+              <Button
+                variant="outline"
+                className="bg-f1Red text-white px-6 py-2 border-none"
+              >
+                LIVE
+              </Button>
+            </CardFooter>
           </Card>
         </div>
       </section>
