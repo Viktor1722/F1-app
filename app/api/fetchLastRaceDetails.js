@@ -15,7 +15,7 @@ export async function fetchLastRaceDetails(year) {
         driverId: result.Driver.driverId,
         givenName: result.Driver.givenName,
         familyName: result.Driver.familyName,
-        time: result.Time ? result.Time.time : "N/A", // Handling missing time
+        time: result.Time ? result.Time.time : "N/A",
       },
       constructor: result.Constructor.name,
       position: result.position,

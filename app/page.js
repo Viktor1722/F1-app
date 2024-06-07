@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./components/navbar";
 import Image from "next/image";
 import CanadaFlag from "../public/CanadaFlag.png";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -45,29 +46,20 @@ export default function Home() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  const newsArticles = [
-    {
-      id: 1,
-      image: "path-to-first-news-article-image.jpg", // Replace with your image path
-      title:
-        "MERCEDES COULD NEVER 'ABANDON' CURRENT CAR FOR F1 2026 HEAD START",
-      description:
-        "Mercedes boss Toto Wolff says his team could never accept throwing the towel in on the current generation of cars to get a head start on Formula 1's 2026 rules.",
-    },
-    // Add more articles as needed
-  ];
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-between bg-coal bg-black">
       <div className="w-full">
         <Navbar />
       </div>
-      <section className="flex flex-wrap gap-3">
+      <section className="flex flex-wrap gap-3 items-end">
         <div>
           <Card className="bg-black border-none">
-            <CardHeader className="text-2xl text-white">
-              <CardTitle>{lastRace.raceName} 2024</CardTitle>
-              <CardDescription className="text-sm text-slate-50">
+            <CardHeader className="text-2xl text-white py-8">
+              <CardTitle className="text-f1Red text-sm">
+                Round 8 Last Race
+              </CardTitle>
+              <CardTitle className="py-2">{lastRace.raceName} 2024</CardTitle>
+              <CardDescription className="text-base  text-slate-50">
                 Home glory for Leclerc as he controls Monaco Grand Prix to win
                 for Ferrari from Piastri and Sainz
               </CardDescription>
@@ -125,7 +117,7 @@ export default function Home() {
             <CardHeader className="text-2xl">
               <div className="flex gap-2">
                 <CardTitle className="text-f1Red text-sm">
-                  Round 7 Next Race
+                  Round 9 Next Race
                 </CardTitle>
               </div>
               <div className="flex gap-4 items-center mt-1">
@@ -188,6 +180,7 @@ export default function Home() {
             </CardContent>
             <CardFooter className="flex justify-start space-x-2 mt-2">
               <Button
+                disabled
                 variant="outline"
                 className="bg-f1Red text-white px-6 py-2 border-none"
               >

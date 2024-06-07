@@ -13,10 +13,9 @@ const Navbar = () => {
           <Link
             href="/"
             className="text-white hover:text-gray-300"
-            onClick={() => setIsOpen(false)}
             legacyBehavior
           >
-            <Image src={Logo} width={100} />
+            <Image onClick={() => setIsOpen(false)} src={Logo} width={100} />
           </Link>
         </div>
         <div className="md:hidden">
@@ -31,34 +30,37 @@ const Navbar = () => {
         >
           <ul className="flex flex-col md:flex-row items-center md:space-x-8 text-center gap-6">
             <li>
-              <Link
-                href="/"
-                className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
-                onClick={() => setIsOpen(false)}
-                legacyBehavior
-              >
-                Home
-              </Link>
+              <b>
+                <Link
+                  href="/raceResults"
+                  className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
+                  legacyBehavior
+                >
+                  <p onClick={() => setIsOpen(false)}>Race Results</p>
+                </Link>
+              </b>
             </li>
             <li>
-              <Link
-                href="/about"
-                className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
-                onClick={() => setIsOpen(false)}
-                legacyBehavior
-              >
-                About
-              </Link>
+              <b>
+                <Link
+                  href="/about"
+                  className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
+                  legacyBehavior
+                >
+                  <p onClick={() => setIsOpen(false)}>Driver Standings</p>
+                </Link>
+              </b>
             </li>
             <li>
-              <Link
-                href="/contact"
-                className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
-                onClick={() => setIsOpen(false)}
-                legacyBehavior
-              >
-                Contact
-              </Link>
+              <b>
+                <Link
+                  href="/contact"
+                  className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
+                  legacyBehavior
+                >
+                  <p onClick={() => setIsOpen(false)}>Constructors standings</p>
+                </Link>
+              </b>
             </li>
           </ul>
         </div>
