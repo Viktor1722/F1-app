@@ -1,67 +1,78 @@
-import { fetchDriverImages } from "../api/drivers";
+// api/seasonResults.js
+import { fetchDrivers } from "./drivers";
 
 export async function fetchAllRaceResults(year) {
-  try {
-    const raceUrl = `https://ergast.com/api/f1/${year}/results.json`;
-    const response = await fetch(raceUrl);
+  const raceResults = [];
+  const drivers = await fetchDrivers();
 
-    if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
+  const getDriverHeadshot = (driverId) => {
+    if (!driverId) return null;
+
+    if (driverId === "max_verstappen") {
+      return "https://www.formula1.com/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png";
     }
+    console.log(`Fetching headshot for driverId: ${driverId}`);
+    const driver = drivers.find(
+      (d) => d.last_name && d.last_name.toLowerCase() === driverId.toLowerCase()
+    );
+    console.log(`Found driver: ${driver ? driver.last_name : "not found"}`);
+    return driver ? driver.headshot_url : null;
+  };
 
-    const data = await response.json();
-    console.log("Raw API Data:", data);
-    const races = data.MRData.RaceTable.Races; // Fetch all races
+  for (let round = 1; round <= 24; round++) {
+    const raceUrl = `https://ergast.com/api/f1/${year}/${round}/results.json`;
 
-    // Fetch driver images
-    const driverImages = await fetchDriverImages();
-    const driverImageMap = driverImages.reduce((acc, driver) => {
-      acc[driver.driver_number] = driver.headshot_url;
-      return acc;
-    }, {});
+    try {
+      const response = await fetch(raceUrl);
 
-    console.log("Driver Image Map:", driverImageMap);
-
-    const raceDetails = races.map((race) => {
-      console.log("Processing race:", race.raceName);
-
-      const topThree = race.Results.slice(0, 3).map((result) => {
-        console.log(
-          "Driver Permanent Number:",
-          result.Driver.permanentNumber,
-          "Headshot URL:",
-          driverImageMap[result.Driver.permanentNumber]
+      if (!response.ok) {
+        console.error(
+          `API call failed for round ${round} with status: ${response.status}`
         );
+        continue;
+      }
 
-        return {
-          driver: {
-            driverId: result.Driver.driverId,
-            givenName: result.Driver.givenName,
-            familyName: result.Driver.familyName,
-            time: result.Time ? result.Time.time : "N/A",
-            headshot_url:
-              driverImageMap[result.Driver.permanentNumber] ||
-              "https://example.com/default-image.png",
-          },
-          constructor: result.Constructor.name,
-          position: result.position,
-        };
-      });
+      const data = await response.json();
+      const races = data.MRData.RaceTable.Races;
 
-      return {
-        raceName: race.raceName,
-        date: race.date,
-        location: race.Circuit.Location.locality,
-        round: race.round,
-        topThree,
-      };
-    });
+      if (races.length > 0) {
+        const race = races[0];
 
-    console.log("Race Details Processed:", raceDetails);
+        const topThree = race.Results.slice(0, 3).map((result, index) => {
+          const headshot_url = getDriverHeadshot(
+            result.Driver.driverId.toLowerCase()
+          );
 
-    return raceDetails;
-  } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
+          return {
+            driver: {
+              driverId: result.Driver.driverId,
+              givenName: result.Driver.givenName,
+              familyName: result.Driver.familyName,
+              name_acronym: result.Driver.code,
+              time: result.Time ? result.Time.time : "N/A",
+              timeDifference:
+                index === 0 ? "N/A" : result.Time ? result.Time.time : "N/A",
+              headshot_url: headshot_url,
+            },
+            constructor: result.Constructor.name,
+            position: result.position,
+          };
+        });
+
+        raceResults.push({
+          raceName: race.raceName,
+          date: race.date,
+          location: race.Circuit.Location.locality,
+          round: race.round,
+          topThree,
+        });
+      } else {
+        console.log(`No data for round ${round}`);
+      }
+    } catch (error) {
+      console.error(`Fetch error for round ${round}:`, error);
+    }
   }
+
+  return raceResults;
 }

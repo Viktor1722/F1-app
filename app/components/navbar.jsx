@@ -1,10 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/f1_logo 1.svg";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [races, setRaces] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Function to fetch race data
+  const fetchRaceData = async () => {
+    const year = 2024;
+    const raceData = [];
+
+    for (let round = 1; round <= 24; round++) {
+      const raceUrl = `https://ergast.com/api/f1/${year}/${round}/results.json`;
+
+      try {
+        const response = await fetch(raceUrl);
+
+        if (!response.ok) {
+          console.error(
+            `API call failed for round ${round} with status: ${response.status}`
+          );
+          continue;
+        }
+
+        const data = await response.json();
+        const races = data.MRData.RaceTable.Races;
+
+        if (races.length > 0) {
+          const race = races[0];
+          raceData.push({
+            round: race.round,
+            raceName: race.raceName,
+            date: race.date,
+          });
+        } else {
+          console.log(`No data for round ${round}`);
+        }
+      } catch (error) {
+        console.error(`Fetch error for round ${round}:`, error);
+      }
+    }
+
+    setRaces(raceData);
+  };
+
+  useEffect(() => {
+    fetchRaceData();
+  }, []);
 
   return (
     <nav className="bg-f1Red text-white p-4">
@@ -15,7 +67,12 @@ const Navbar = () => {
             className="text-white hover:text-gray-300"
             legacyBehavior
           >
-            <Image onClick={() => setIsOpen(false)} src={Logo} width={100} />
+            <Image
+              onClick={() => setIsOpen(false)}
+              src={Logo}
+              width={100}
+              alt="F1 Logo"
+            />
           </Link>
         </div>
         <div className="md:hidden">
@@ -58,10 +115,20 @@ const Navbar = () => {
                   className="block py-2 px-4 hover:bg-gray-700 md:hover:bg-transparent"
                   legacyBehavior
                 >
-                  <p onClick={() => setIsOpen(false)}>Constructors standings</p>
+                  <p onClick={() => setIsOpen(false)}>Constructors Standings</p>
                 </Link>
               </b>
             </li>
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectContent>
+            </Select>
           </ul>
         </div>
       </div>
