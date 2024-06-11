@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/f1_logo 1.svg";
+import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -13,7 +14,7 @@ import {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [races, setRaces] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
 
   // Function to fetch race data
   const fetchRaceData = async () => {
@@ -57,6 +58,11 @@ const Navbar = () => {
   useEffect(() => {
     fetchRaceData();
   }, []);
+
+  const handleRaceChange = (raceRound) => {
+    router.push(`/raceStats/${raceRound}`);
+    setIsOpen(false);
+  };
 
   return (
     <nav className="bg-f1Red text-white p-4">
@@ -119,16 +125,20 @@ const Navbar = () => {
                 </Link>
               </b>
             </li>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
+            <li>
+              <Select onValueChange={handleRaceChange}>
+                <SelectTrigger className="w-[220px]">
+                  <SelectValue placeholder="Races" />
+                </SelectTrigger>
+                <SelectContent>
+                  {races.map((race) => (
+                    <SelectItem key={race.round} value={race.round}>
+                      {race.raceName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </li>
           </ul>
         </div>
       </div>

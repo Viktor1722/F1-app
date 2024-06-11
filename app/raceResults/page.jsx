@@ -4,7 +4,6 @@ import { fetchAllRaceResults } from "../api/seasonResults";
 import Navbar from "../components/navbar";
 import { Separator } from "@/components/ui/separator";
 import Loading from "./loading";
-import "./style.css";
 
 const RaceResults = () => {
   const [raceResults, setRaceResults] = useState([]);

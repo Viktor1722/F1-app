@@ -62,9 +62,7 @@ export default function Home() {
                   <CardTitle className="text-f1Red text-sm">
                     Round 8 Last Race
                   </CardTitle>
-                  <CardTitle className="py-2">
-                    {lastRace.raceName} 2024
-                  </CardTitle>
+                  <CardTitle className="py-2">{lastRace} 2024</CardTitle>
                   <CardDescription className="text-base  text-slate-50">
                     Home glory for Leclerc as he controls Monaco Grand Prix to
                     win for Ferrari from Piastri and Sainz
